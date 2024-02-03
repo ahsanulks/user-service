@@ -9,6 +9,7 @@ RUN apt-get update
 USER vscode
 RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 RUN go install github.com/golang/mock/mockgen@latest
+RUN go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 RUN go install github.com/cosmtrek/air@latest
 
 # USER root

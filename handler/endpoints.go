@@ -1,18 +1,28 @@
 package handler
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/SawitProRecruitment/UserService/generated"
 	"github.com/labstack/echo/v4"
 )
 
-// This is just a test endpoint to get you started. Please delete this endpoint.
-// (GET /hello)
-func (s *Server) Hello(ctx echo.Context, params generated.HelloParams) error {
+var _ generated.ServerInterface = new(Server)
 
-	var resp generated.HelloResponse
-	resp.Message = fmt.Sprintf("Hello User %d", params.Id)
-	return ctx.JSON(http.StatusOK, resp)
+// CreateUser implements generated.ServerInterface.
+func (*Server) CreateUser(ctx echo.Context) error {
+	panic("unimplemented")
+}
+
+// GenerateUserToken implements generated.ServerInterface.
+func (*Server) GenerateUserToken(ctx echo.Context) error {
+	panic("unimplemented")
+}
+
+// GetCurrentUser implements generated.ServerInterface.
+func (*Server) GetCurrentUser(ctx echo.Context) error {
+	panic("unimplemented")
+}
+
+// UpdateCurrentUserData implements generated.ServerInterface.
+func (*Server) UpdateCurrentUserData(ctx echo.Context) error {
+	panic("unimplemented")
 }
