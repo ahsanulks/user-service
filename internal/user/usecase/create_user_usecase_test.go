@@ -43,6 +43,17 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			wantId:  "",
 			wantErr: true,
 		},
+		{
+			name: "when phoneNumber not have prefix +62 it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "0812311231231",
+				FullName:    faker.Name(options.WithRandomStringLength(10)),
+				Password:    faker.Password(options.WithRandomStringLength(10)),
+			}},
+			wantId:  "",
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
