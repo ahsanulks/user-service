@@ -2,6 +2,7 @@ package entity
 
 import (
 	"fmt"
+	"regexp"
 	"time"
 )
 
@@ -36,6 +37,12 @@ func NewUser(fullName, phoneNumber, password string) (*User, error) {
 func (user User) ValidatePhoneNumber() error {
 	if len(user.PhoneNumber) < phoneNumberMinLen || len(user.PhoneNumber) > phoneNumberMaxLen {
 		return fmt.Errorf("phone number must be between %d and %d characters in length", phoneNumberMinLen, phoneNumberMaxLen)
+	}
+
+	phoneNumberRegex := `^\+62[0-9]$`
+	match, _ := regexp.MatchString(phoneNumberRegex, user.PhoneNumber)
+	if !match {
+		return fmt.Errorf("phone number must start with '+62' and only containt number")
 	}
 	return nil
 }
