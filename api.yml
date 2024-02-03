@@ -1,5 +1,5 @@
 # This is the OpenAPI specification for your service. It is used to generate the client code.
-# To generate the server code, use the Gradle task `openApiGenerate`. The 
+# To generate the server code, use the Gradle task `openApiGenerate`. The
 # generated code will be placed in `build/generate-resources/main`.
 #
 # We will evaluate you based on how well you design your API.
@@ -15,44 +15,216 @@ info:
   license:
     name: MIT
 servers:
-  - url: http://localhost
+  - url: http://localhost:8080/api/v1
 paths:
-  /hello:
-    get:
-      summary: This is just a test endpoint to get you started. Please delete this endpoint.
-      operationId: hello
-      parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
+  /users:
+    post:
+      summary: Creating a new user
+      operationId: createUser
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
       responses:
-        '200':
-          description: Test return
-          content:
-            application/json:    
-              schema:
-                $ref: "#/components/schemas/HelloResponse"
-        '404':
-          description: Not found
+        "201":
+          description: Successfully create user
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/CreateUserResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+  /users/token:
+    post:
+      summary: Will generate user token
+      operationId: generateUserToken
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTokenRequest"
+      responses:
+        "200":
+          description: Successfully create user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateTokenResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+  /users/me:
+    get:
+      summary: get current user profile
+      operationId: getCurrentUser
+      tags:
+        - user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Success get current user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetUserResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    patch:
+      summary: update current user profile data
+      operationId: updateCurrentUserData
+      tags:
+        - user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: Success get current user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetUserResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/ResourceConflict"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    InvalidInput:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ResourceConflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
   schemas:
-    HelloResponse:
+    CreateUserRequest:
       type: object
       required:
-        - message
+        - phoneNumber
+        - fullName
+        - password
       properties:
-        message:
+        phoneNumber:
           type: string
+          minLength: 10
+          maxLength: 13
+          pattern: '^\+62[0-9]+$'
+        fullName:
+          type: string
+          minLength: 3
+          maxLength: 60
+          example: "John Doe"
+        password:
+          type: string
+          minLength: 6
+          maxLength: 64
+          pattern: "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).*$"
+    CreateUserResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: The UUID of the user
+          type: string
+          format: uuid
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    CreateTokenRequest:
+      type: object
+      required:
+        - phoneNumber
+        - password
+      properties:
+        phoneNumber:
+          type: string
+        password:
+          type: string
+    CreateTokenResponse:
+      type: object
+      required:
+        - accessToken
+        - type
+        - expiresIn
+      properties:
+        accessToken:
+          type: string
+        "type":
+          type: string
+          example: "Bearer"
+        expiresIn:
+          type: integer
+          format: int32
+          example: 3600
+    GetUserResponse:
+      type: object
+      required:
+        - fullName
+        - phoneNumber
+      properties:
+        fullName:
+          type: string
+        phoneNumber:
+          type: string
+    UpdateUserRequest:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          minLength: 10
+          maxLength: 13
+          pattern: '^\+62[0-9]+$'
+        fullName:
+          type: string
+          minLength: 3
+          maxLength: 60
+          example: "John Doe"
     ErrorResponse:
       type: object
       required:
-        - message
+        - type
+        - messages
       properties:
-        message:
+        type:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorResponseItem"
+    ErrorResponseItem:
+      type: object
+      properties:
+        name:
+          type: string
+        reason:
           type: string
