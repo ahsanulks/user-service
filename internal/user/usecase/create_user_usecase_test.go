@@ -18,29 +18,29 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		name    string
 		uu      *UserUsecase
 		args    args
-		wantId  int
+		wantId  string
 		wantErr bool
 	}{
 		{
 			name: "when phoneNumber less than 10 character it should return error",
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
-				PhoneNumber: faker.Phonenumber(options.WithRandomStringLength(9)),
+				PhoneNumber: "+62123",
 				FullName:    faker.Name(options.WithRandomStringLength(10)),
 				Password:    faker.Password(options.WithRandomStringLength(10)),
 			}},
-			wantId:  0,
+			wantId:  "",
 			wantErr: true,
 		},
 		{
 			name: "when phoneNumber more than 13 character it should return error",
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
-				PhoneNumber: faker.Phonenumber(options.WithRandomStringLength(14)),
+				PhoneNumber: "+62123123123123",
 				FullName:    faker.Name(options.WithRandomStringLength(10)),
 				Password:    faker.Password(options.WithRandomStringLength(10)),
 			}},
-			wantId:  0,
+			wantId:  "",
 			wantErr: true,
 		},
 	}

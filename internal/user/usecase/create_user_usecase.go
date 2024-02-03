@@ -1,6 +1,10 @@
 package usecase
 
-import "context"
+import (
+	"context"
+
+	"github.com/SawitProRecruitment/UserService/internal/user/entity"
+)
 
 type CreateUserParam struct {
 	PhoneNumber string
@@ -8,6 +12,10 @@ type CreateUserParam struct {
 	Password    string
 }
 
-func (uu UserUsecase) CreateUser(ctx context.Context, param *CreateUserParam) (id int, err error) {
-	return
+func (uu UserUsecase) CreateUser(ctx context.Context, params *CreateUserParam) (id string, err error) {
+	user, err := entity.NewUser(params.FullName, params.PhoneNumber, params.Password)
+	if err != nil {
+		return id, err
+	}
+	return user.ID, err
 }
