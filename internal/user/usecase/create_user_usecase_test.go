@@ -1,0 +1,59 @@
+package usecase
+
+import (
+	"context"
+	"testing"
+
+	"github.com/go-faker/faker/v4"
+	"github.com/go-faker/faker/v4/pkg/options"
+)
+
+func TestUserUsecase_CreateUser(t *testing.T) {
+	faker.Username()
+	type args struct {
+		ctx   context.Context
+		param *CreateUserParam
+	}
+	tests := []struct {
+		name    string
+		uu      *UserUsecase
+		args    args
+		wantId  int
+		wantErr bool
+	}{
+		{
+			name: "when phoneNumber less than 10 character it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: faker.Phonenumber(options.WithRandomStringLength(9)),
+				FullName:    faker.Name(options.WithRandomStringLength(10)),
+				Password:    faker.Password(options.WithRandomStringLength(10)),
+			}},
+			wantId:  0,
+			wantErr: true,
+		},
+		{
+			name: "when phoneNumber more than 13 character it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: faker.Phonenumber(options.WithRandomStringLength(14)),
+				FullName:    faker.Name(options.WithRandomStringLength(10)),
+				Password:    faker.Password(options.WithRandomStringLength(10)),
+			}},
+			wantId:  0,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotId, err := tt.uu.CreateUser(tt.args.ctx, tt.args.param)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UserUsecase.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if gotId != tt.wantId {
+				t.Errorf("UserUsecase.CreateUser() = %v, want %v", gotId, tt.wantId)
+			}
+		})
+	}
+}
