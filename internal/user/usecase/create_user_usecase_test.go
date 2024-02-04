@@ -4,10 +4,10 @@ import (
 	"context"
 	"crypto/rand"
 	"math/big"
+	"regexp"
 	"testing"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/go-faker/faker/v4/pkg/options"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,7 +31,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+62123",
 				FullName:    faker.Name(),
-				Password:    faker.Password(),
+				Password:    generateRandomPassword(12),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -43,7 +43,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+62123123123123",
 				FullName:    faker.Name(),
-				Password:    faker.Password(),
+				Password:    generateRandomPassword(12),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -55,7 +55,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "0812311231231",
 				FullName:    faker.Name(),
-				Password:    faker.Password(),
+				Password:    generateRandomPassword(12),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -66,8 +66,8 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+62abc3123123",
-				FullName:    faker.Name(options.WithRandomStringLength(10)),
-				Password:    faker.Password(options.WithRandomStringLength(10)),
+				FullName:    faker.Name(),
+				Password:    generateRandomPassword(12),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -78,8 +78,8 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+628123123123",
-				FullName:    generateRandomString(2),
-				Password:    faker.Password(),
+				FullName:    generateRandomString(2, ""),
+				Password:    generateRandomPassword(12),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -90,12 +90,36 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+628123123123",
-				FullName:    generateRandomString(61),
-				Password:    faker.Password(),
+				FullName:    generateRandomString(61, ""),
+				Password:    generateRandomPassword(12),
 			}},
 			wantId:     "",
 			wantErr:    true,
 			wantErrMsg: "fullName: must be between 3 and 60 characters in length",
+		},
+		{
+			name: "when password less than 6 character, it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "+628123123123",
+				FullName:    faker.Name(),
+				Password:    "aA2.",
+			}},
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "password: must be between 6 and 64 characters in length",
+		},
+		{
+			name: "when password more than 64 character, it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "+628123123123",
+				FullName:    faker.Name(),
+				Password:    generateRandomPassword(65),
+			}},
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "password: must be between 6 and 64 characters in length",
 		},
 	}
 	for _, tt := range tests {
@@ -108,8 +132,11 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		})
 	}
 }
-func generateRandomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+func generateRandomString(length int, charset string) string {
+	if charset == "" {
+		charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	}
 	charsetLength := big.NewInt(int64(len(charset)))
 
 	randomString := make([]byte, length)
@@ -119,4 +146,17 @@ func generateRandomString(length int) string {
 	}
 
 	return string(randomString)
+}
+
+func generateRandomPassword(length int) string {
+	charset := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:'\",.<>/?~"
+	passwordRegex := regexp.MustCompile(`^(.*[A-Z])(.*\d)(.*[^A-Za-z0-9])`)
+	var password string
+	match := false
+	for !match {
+		password = generateRandomString(length, charset)
+		match = passwordRegex.MatchString(password)
+	}
+
+	return password
 }
