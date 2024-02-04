@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -27,6 +29,17 @@ func parseError(ctx echo.Context, err error) error {
 			},
 		})
 	default:
+		if errors.Is(parsedError, sql.ErrNoRows) {
+			return ctx.JSON(http.StatusNotFound, generated.ErrorResponse{
+				Type: "RecordNotFound",
+				Messages: []generated.ErrorResponseItem{
+					{
+						Name:   "datra",
+						Reason: parsedError.Error(),
+					},
+				},
+			})
+		}
 		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{
 			Type: "InternalServerError",
 			Messages: []generated.ErrorResponseItem{

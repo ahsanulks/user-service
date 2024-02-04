@@ -2,23 +2,31 @@ package fake
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"time"
 
 	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
+	"github.com/SawitProRecruitment/UserService/internal/user/entity"
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driver"
 	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
 	"github.com/google/uuid"
 )
 
-var _ driver.UserUsecase = new(FakeUserUsecase)
+var (
+	_ driver.UserUsecase       = new(FakeUserUsecase)
+	_ driver.UserGetterUsecase = new(FakeUserUsecase)
+)
 
 type FakeUserUsecase struct {
-	data map[string]string
+	data     map[string]string
+	dataById map[string]*entity.User
 }
 
 func NewFakeUserUsecase() *FakeUserUsecase {
 	return &FakeUserUsecase{
-		data: make(map[string]string),
+		data:     make(map[string]string),
+		dataById: make(map[string]*entity.User),
 	}
 }
 
@@ -36,6 +44,14 @@ func (fu *FakeUserUsecase) CreateUser(ctx context.Context, params *usecase.Creat
 
 	id = uuid.New().String()
 	fu.data[params.PhoneNumber] = id
+	fu.dataById[id] = &entity.User{
+		ID:          id,
+		FullName:    params.FullName,
+		PhoneNumber: params.PhoneNumber,
+		Password:    params.Password,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
 	return
 }
 
@@ -44,4 +60,15 @@ func (fu FakeUserUsecase) GetIDByPhone(phone string) (id string, err error) {
 		return id, nil
 	}
 	return "", errors.New("not Found")
+}
+
+// GetUserByID implements driver.UserGetterUsecase.
+func (fu *FakeUserUsecase) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
+	if id == "1232131" {
+		return nil, sql.ErrNoRows
+	}
+	if data, ok := fu.dataById[id]; ok {
+		return data, nil
+	}
+	return nil, errors.New("not Found")
 }
