@@ -121,6 +121,42 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "password: must be between 6 and 64 characters in length",
 		},
+		{
+			name: "when password not containt number, it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "+628123123123",
+				FullName:    faker.Name(),
+				Password:    "abcAdasd.D",
+			}},
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "password: containing at least 1 capital characters AND 1 number AND 1 special (nonalpha-numeric) characters",
+		},
+		{
+			name: "when password not containt capital char, it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "+628123123123",
+				FullName:    faker.Name(),
+				Password:    "abc123.asd",
+			}},
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "password: containing at least 1 capital characters AND 1 number AND 1 special (nonalpha-numeric) characters",
+		},
+		{
+			name: "when password not containt special char, it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "+628123123123",
+				FullName:    faker.Name(),
+				Password:    "Asd123ASd",
+			}},
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "password: containing at least 1 capital characters AND 1 number AND 1 special (nonalpha-numeric) characters",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
