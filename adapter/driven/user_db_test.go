@@ -3,6 +3,7 @@ package driven
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"testing"
 
@@ -49,6 +50,24 @@ func TestUserDB_Create(t *testing.T) {
 				mock.ExpectQuery("^INSERT INTO users").
 					WithArgs(user.FullName, user.PhoneNumber, user.Password).
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("aaaa-bbb-ccc-123"))
+			},
+		},
+		{
+			name: "when something went wrong in db, it should return error",
+			args: args{
+				ctx: context.Background(),
+				user: &entity.User{
+					FullName:    faker.Name(),
+					PhoneNumber: faker.Phonenumber(),
+					Password:    faker.Password(),
+				},
+			},
+			wantId:  "",
+			wantErr: true,
+			expectFunc: func(mock sqlmock.Sqlmock, user *entity.User) {
+				mock.ExpectQuery("^INSERT INTO users").
+					WithArgs(user.FullName, user.PhoneNumber, user.Password).
+					WillReturnError(errors.New("some database error"))
 			},
 		},
 	}
