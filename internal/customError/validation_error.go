@@ -15,7 +15,7 @@ func NewValidationError() *ValidationError {
 
 func (ve *ValidationError) AddError(key, message string) {
 	if val, ok := ve.errors[key]; ok {
-		ve.errors[key] = val + ";" + message
+		ve.errors[key] = val + "," + message
 	} else {
 		ve.errors[key] = message
 	}
