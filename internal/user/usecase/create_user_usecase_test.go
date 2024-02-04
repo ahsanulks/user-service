@@ -157,6 +157,18 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "password: containing at least 1 capital characters AND 1 number AND 1 special (nonalpha-numeric) characters",
 		},
+		{
+			name: "when all field not valid, it should return all error message",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "",
+				FullName:    "",
+				Password:    "",
+			}},
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "phoneNumber: must be between 10 and 13 characters in length,must start with '+62' and only containt number;fullName: must be between 3 and 60 characters in length;password: must be between 6 and 64 characters in length,containing at least 1 capital characters AND 1 number AND 1 special (nonalpha-numeric) characters",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
