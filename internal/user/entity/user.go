@@ -59,6 +59,7 @@ func (user User) validatePhoneNumber() error {
 		validationError.AddError("phoneNumber", fmt.Sprintf("must be between %d and %d characters in length", phoneNumberMinLen, phoneNumberMaxLen))
 	}
 
+	// check that have prefix +62 and only containt 0-9 after that
 	phoneNumberRegex := regexp.MustCompile(`^\+62[0-9]`)
 	match := phoneNumberRegex.MatchString(user.PhoneNumber)
 	if !match {
