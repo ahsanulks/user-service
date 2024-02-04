@@ -9,7 +9,10 @@ import (
 	"github.com/google/uuid"
 )
 
-var _ driven.UserWriter = new(FakeUserDriven)
+var (
+	_ driven.UserWriter = new(FakeUserDriven)
+	_ driven.UserGetter = new(FakeUserDriven)
+)
 
 type FakeUserDriven struct {
 	data map[string]*entity.User
@@ -28,6 +31,7 @@ func (fud *FakeUserDriven) Create(ctx context.Context, user *entity.User) (id st
 	return user.ID, nil
 }
 
+// Create implements driven.UserGetter.
 func (fud FakeUserDriven) GetByID(ctx context.Context, id string) (*entity.User, error) {
 	if user, ok := fud.data[id]; ok {
 		return user, nil
