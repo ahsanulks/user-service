@@ -169,14 +169,28 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "phoneNumber: must be between 10 and 13 characters in length,must start with '+62' and only containt number;fullName: must be between 3 and 60 characters in length;password: must be between 6 and 64 characters in length,containing at least 1 capital characters AND 1 number AND 1 special (nonalpha-numeric) characters",
 		},
+		{
+			name: "when all field valid, it should return id and saved",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "+628123123123",
+				FullName:    faker.Name(),
+				Password:    generateRandomPassword(12),
+			}},
+			wantId:     "asdad1-1231-asdsa-123123",
+			wantErr:    false,
+			wantErrMsg: "",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotId, err := tt.uu.CreateUser(tt.args.ctx, tt.args.param)
 			assert := assert.New(t)
 			assert.Equal(tt.wantId, gotId)
-			assert.Error(err)
-			assert.EqualError(err, tt.wantErrMsg)
+			if tt.wantErr {
+				assert.Error(err)
+				assert.EqualError(err, tt.wantErrMsg)
+			}
 		})
 	}
 }
