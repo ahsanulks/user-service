@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/SawitProRecruitment/UserService/generated"
 	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -12,7 +15,7 @@ func (s *Server) CreateUser(ctx echo.Context) error {
 	if err := ctx.Bind(&params); err != nil {
 		return parseError(ctx, err)
 	}
-	_, err := s.uu.CreateUser(ctx.Request().Context(), &usecase.CreateUserParam{
+	id, err := s.uu.CreateUser(ctx.Request().Context(), &usecase.CreateUserParam{
 		PhoneNumber: params.PhoneNumber,
 		FullName:    params.FullName,
 		Password:    params.Password,
@@ -22,5 +25,8 @@ func (s *Server) CreateUser(ctx echo.Context) error {
 		return parseError(ctx, err)
 	}
 
-	return nil
+	uuid, _ := uuid.Parse(id)
+	return ctx.JSON(http.StatusCreated, generated.CreateUserResponse{
+		Id: uuid,
+	})
 }
