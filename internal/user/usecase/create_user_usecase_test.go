@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"crypto/rand"
+	"math/big"
 	"testing"
 
 	"github.com/go-faker/faker/v4"
@@ -28,8 +30,8 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+62123",
-				FullName:    faker.Name(options.WithRandomStringLength(10)),
-				Password:    faker.Password(options.WithRandomStringLength(10)),
+				FullName:    faker.Name(),
+				Password:    faker.Password(),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -40,8 +42,8 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+62123123123123",
-				FullName:    faker.Name(options.WithRandomStringLength(10)),
-				Password:    faker.Password(options.WithRandomStringLength(10)),
+				FullName:    faker.Name(),
+				Password:    faker.Password(),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -52,8 +54,8 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "0812311231231",
-				FullName:    faker.Name(options.WithRandomStringLength(10)),
-				Password:    faker.Password(options.WithRandomStringLength(10)),
+				FullName:    faker.Name(),
+				Password:    faker.Password(),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -76,8 +78,8 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+628123123123",
-				FullName:    faker.Name(options.WithRandomStringLength(2)),
-				Password:    faker.Password(options.WithRandomStringLength(10)),
+				FullName:    generateRandomString(2),
+				Password:    faker.Password(),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -88,8 +90,8 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			uu:   NewUserUsecase(),
 			args: args{context.Background(), &CreateUserParam{
 				PhoneNumber: "+628123123123",
-				FullName:    faker.Name(options.WithRandomStringLength(61)),
-				Password:    faker.Password(options.WithRandomStringLength(10)),
+				FullName:    generateRandomString(61),
+				Password:    faker.Password(),
 			}},
 			wantId:     "",
 			wantErr:    true,
@@ -105,4 +107,16 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			assert.EqualError(err, tt.wantErrMsg)
 		})
 	}
+}
+func generateRandomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	charsetLength := big.NewInt(int64(len(charset)))
+
+	randomString := make([]byte, length)
+	for i := 0; i < length; i++ {
+		randomIndex, _ := rand.Int(rand.Reader, charsetLength)
+		randomString[i] = charset[randomIndex.Int64()]
+	}
+
+	return string(randomString)
 }
