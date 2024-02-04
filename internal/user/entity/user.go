@@ -41,7 +41,7 @@ func (user User) ValidatePhoneNumber() error {
 		validationError.AddError("phoneNumber", fmt.Sprintf("must be between %d and %d characters in length", phoneNumberMinLen, phoneNumberMaxLen))
 	}
 
-	phoneNumberRegex := `^\+62[0-9]$`
+	phoneNumberRegex := `^\+62[0-9]`
 	match, _ := regexp.MatchString(phoneNumberRegex, user.PhoneNumber)
 	if !match {
 		validationError.AddError("phoneNumber", "must start with '+62' and only containt number")

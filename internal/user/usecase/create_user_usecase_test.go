@@ -16,11 +16,12 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		param *CreateUserParam
 	}
 	tests := []struct {
-		name    string
-		uu      *UserUsecase
-		args    args
-		wantId  string
-		wantErr bool
+		name       string
+		uu         *UserUsecase
+		args       args
+		wantId     string
+		wantErr    bool
+		wantErrMsg string
 	}{
 		{
 			name: "when phoneNumber less than 10 character it should return error",
@@ -30,8 +31,9 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 				FullName:    faker.Name(options.WithRandomStringLength(10)),
 				Password:    faker.Password(options.WithRandomStringLength(10)),
 			}},
-			wantId:  "",
-			wantErr: true,
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "phoneNumber: must be between 10 and 13 characters in length",
 		},
 		{
 			name: "when phoneNumber more than 13 character it should return error",
@@ -41,8 +43,9 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 				FullName:    faker.Name(options.WithRandomStringLength(10)),
 				Password:    faker.Password(options.WithRandomStringLength(10)),
 			}},
-			wantId:  "",
-			wantErr: true,
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "phoneNumber: must be between 10 and 13 characters in length",
 		},
 		{
 			name: "when phoneNumber not have prefix +62 it should return error",
@@ -52,8 +55,9 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 				FullName:    faker.Name(options.WithRandomStringLength(10)),
 				Password:    faker.Password(options.WithRandomStringLength(10)),
 			}},
-			wantId:  "",
-			wantErr: true,
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "phoneNumber: must start with '+62' and only containt number",
 		},
 		{
 			name: "when phoneNumber have prefix +62 but containt other than number, it should return error",
@@ -63,32 +67,18 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 				FullName:    faker.Name(options.WithRandomStringLength(10)),
 				Password:    faker.Password(options.WithRandomStringLength(10)),
 			}},
-			wantId:  "",
-			wantErr: true,
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "phoneNumber: must start with '+62' and only containt number",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotId, err := tt.uu.CreateUser(tt.args.ctx, tt.args.param)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("UserUsecase.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if gotId != tt.wantId {
-				t.Errorf("UserUsecase.CreateUser() = %v, want %v", gotId, tt.wantId)
-			}
+			assert := assert.New(t)
+			assert.Equal(tt.wantId, gotId)
+			assert.Error(err)
+			assert.EqualError(err, tt.wantErrMsg)
 		})
 	}
-}
-
-func TestCreateUser_shouldReturnErrorAllConstraintValidation(t *testing.T) {
-	userUsecase := NewUserUsecase()
-	_, err := userUsecase.CreateUser(context.Background(), &CreateUserParam{
-		PhoneNumber: "123131",
-		FullName:    faker.Name(options.WithRandomStringLength(10)),
-		Password:    faker.Password(options.WithRandomStringLength(10)),
-	})
-	assert := assert.New(t)
-	assert.Error(err)
-	assert.EqualError(err, "phoneNumber: must be between 10 and 13 characters in length;must start with '+62' and only containt number")
 }
