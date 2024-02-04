@@ -15,7 +15,7 @@ func (s *Server) CreateUser(ctx echo.Context) error {
 	if err := ctx.Bind(&params); err != nil {
 		return parseError(ctx, err)
 	}
-	id, err := s.uu.CreateUser(ctx.Request().Context(), &usecase.CreateUserParam{
+	id, err := s.userUsecase.CreateUser(ctx.Request().Context(), &usecase.CreateUserParam{
 		PhoneNumber: params.PhoneNumber,
 		FullName:    params.FullName,
 		Password:    params.Password,

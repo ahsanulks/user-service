@@ -7,7 +7,10 @@ import (
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
 )
 
-var _ driven.UserWriter = new(UserDB)
+var (
+	_ driven.UserWriter = new(UserDB)
+	_ driven.UserGetter = new(UserDB)
+)
 
 type UserDB struct {
 	conn *PostgreConnection

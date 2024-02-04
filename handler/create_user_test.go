@@ -29,7 +29,7 @@ func TestServer_CreateUser_CannotBindBody(t *testing.T) {
 
 	fu := fake.NewFakeUserUsecase()
 	server := &Server{
-		uu: fu,
+		userUsecase: fu,
 	}
 
 	err := server.CreateUser(ctx)
@@ -58,7 +58,7 @@ func TestServer_CreateUser_ErrValidation(t *testing.T) {
 
 	fu := fake.NewFakeUserUsecase()
 	server := &Server{
-		uu: fu,
+		userUsecase: fu,
 	}
 
 	err := server.CreateUser(ctx)
@@ -87,7 +87,7 @@ func TestServer_CreateUser_UnexpectedError(t *testing.T) {
 
 	fu := fake.NewFakeUserUsecase()
 	server := &Server{
-		uu: fu,
+		userUsecase: fu,
 	}
 
 	err := server.CreateUser(ctx)
@@ -112,7 +112,7 @@ func TestServer_CreateUser_Success(t *testing.T) {
 
 	fu := fake.NewFakeUserUsecase()
 	server := &Server{
-		uu: fu,
+		userUsecase: fu,
 	}
 
 	err := server.CreateUser(ctx)

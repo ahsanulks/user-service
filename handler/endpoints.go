@@ -12,12 +12,6 @@ func (*Server) GenerateUserToken(ctx echo.Context) error {
 	panic("unimplemented")
 }
 
-// GetCurrentUser implements generated.ServerInterface.
-func (*Server) GetCurrentUser(ctx echo.Context) error {
-	panic("unimplemented")
-}
-
-// UpdateCurrentUserData implements generated.ServerInterface.
 func (*Server) UpdateCurrentUserData(ctx echo.Context) error {
 	panic("unimplemented")
 }

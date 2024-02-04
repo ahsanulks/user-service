@@ -8,7 +8,8 @@ import (
 )
 
 type Server struct {
-	uu driver.UserUsecase
+	userUsecase driver.UserUsecase
+	userGetter  driver.UserGetterUsecase
 }
 
 type ServerOptions struct {
@@ -20,6 +21,7 @@ func NewServer(opt *ServerOptions) *Server {
 	userDB := driven.NewUserDB(db)
 
 	return &Server{
-		uu: usecase.NewUserUsecase(userDB, new(driven.BcyrpEncryption)),
+		userUsecase: usecase.NewUserUsecase(userDB, new(driven.BcyrpEncryption)),
+		userGetter:  usecase.NewUserGetterUsecase(userDB),
 	}
 }
