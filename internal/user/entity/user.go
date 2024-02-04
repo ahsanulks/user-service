@@ -13,6 +13,8 @@ const (
 	phoneNumberMaxLen = 13
 	fullNameMinLen    = 3
 	fullNameMaxLen    = 60
+	passwordMinLen    = 6
+	passwordMaxLen    = 64
 )
 
 type User struct {
@@ -37,6 +39,10 @@ func NewUser(fullName, phoneNumber, password string) (*User, error) {
 	}
 
 	if err := user.validateFullName(); err != nil {
+		validationError.Merge(err)
+	}
+
+	if err := user.validatePassword(); err != nil {
 		validationError.Merge(err)
 	}
 
@@ -70,6 +76,19 @@ func (user User) validateFullName() error {
 	validationError := customerror.NewValidationError()
 	if len(user.FullName) < fullNameMinLen || len(user.FullName) > fullNameMaxLen {
 		validationError.AddError("fullName", fmt.Sprintf("must be between %d and %d characters in length", fullNameMinLen, fullNameMaxLen))
+	}
+
+	if validationError.HasError() {
+		return validationError
+	}
+
+	return nil
+}
+
+func (user User) validatePassword() error {
+	validationError := customerror.NewValidationError()
+	if len(user.Password) < passwordMinLen || len(user.Password) > passwordMaxLen {
+		validationError.AddError("password", fmt.Sprintf("must be between %d and %d characters in length", passwordMinLen, passwordMaxLen))
 	}
 
 	if validationError.HasError() {
