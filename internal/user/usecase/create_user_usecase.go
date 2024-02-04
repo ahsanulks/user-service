@@ -17,5 +17,5 @@ func (uu UserUsecase) CreateUser(ctx context.Context, params *CreateUserParam) (
 	if err != nil {
 		return id, err
 	}
-	return user.ID, err
+	return uu.userWriter.Create(ctx, user)
 }
