@@ -21,5 +21,13 @@ func NewUserDB(db *PostgreConnection) *UserDB {
 
 // Create implements driven.UserWriter.
 func (udb *UserDB) Create(ctx context.Context, user *entity.User) (id string, err error) {
+	err = udb.conn.Db.QueryRowContext(ctx, `
+		INSERT INTO
+			users (full_name, phone_number, password)
+		VALUES
+			($1, $2, $3)
+		RETURNING
+			id
+	`, user.FullName, user.PhoneNumber, user.Password).Scan(&id)
 	return
 }
