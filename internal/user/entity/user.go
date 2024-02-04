@@ -91,6 +91,13 @@ func (user User) validatePassword() error {
 		validationError.AddError("password", fmt.Sprintf("must be between %d and %d characters in length", passwordMinLen, passwordMaxLen))
 	}
 
+	// Check for at least 1 capital letter, 1 number, and 1 special character
+	passwordRegex := regexp.MustCompile(`^(.*[A-Z])(.*\d)(.*[^A-Za-z0-9])`)
+	match := passwordRegex.MatchString(user.Password)
+	if !match {
+		validationError.AddError("password", "containing at least 1 capital characters AND 1 number AND 1 special (nonalpha-numeric) characters")
+	}
+
 	if validationError.HasError() {
 		return validationError
 	}
