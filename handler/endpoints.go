@@ -7,11 +7,6 @@ import (
 
 var _ generated.ServerInterface = new(Server)
 
-// CreateUser implements generated.ServerInterface.
-func (*Server) CreateUser(ctx echo.Context) error {
-	panic("unimplemented")
-}
-
 // GenerateUserToken implements generated.ServerInterface.
 func (*Server) GenerateUserToken(ctx echo.Context) error {
 	panic("unimplemented")

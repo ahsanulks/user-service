@@ -15,9 +15,9 @@ info:
   license:
     name: MIT
 servers:
-  - url: http://localhost:8080/api/v1
+  - url: http://localhost:8080
 paths:
-  /users:
+  /api/v1/users:
     post:
       summary: Creating a new user
       operationId: createUser
@@ -38,7 +38,7 @@ paths:
                 $ref: "#/components/schemas/CreateUserResponse"
         "400":
           $ref: "#/components/responses/InvalidInput"
-  /users/token:
+  /api/v1/users/token:
     post:
       summary: Will generate user token
       operationId: generateUserToken
@@ -59,7 +59,7 @@ paths:
                 $ref: "#/components/schemas/CreateTokenResponse"
         "400":
           $ref: "#/components/responses/InvalidInput"
-  /users/me:
+  /api/v1/users/me:
     get:
       summary: get current user profile
       operationId: getCurrentUser
@@ -223,6 +223,9 @@ components:
             $ref: "#/components/schemas/ErrorResponseItem"
     ErrorResponseItem:
       type: object
+      required:
+        - name
+        - reason
       properties:
         name:
           type: string
