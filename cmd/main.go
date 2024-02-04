@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/SawitProRecruitment/UserService/config"
 	"github.com/SawitProRecruitment/UserService/generated"
 	"github.com/SawitProRecruitment/UserService/handler"
 
@@ -13,9 +14,11 @@ func main() {
 	var server generated.ServerInterface = newServer()
 
 	generated.RegisterHandlers(e, server)
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":8080"))
 }
 
 func newServer() *handler.Server {
-	return handler.NewServer()
+	return handler.NewServer(&handler.ServerOptions{
+		Conf: config.NewConfig(),
+	})
 }
