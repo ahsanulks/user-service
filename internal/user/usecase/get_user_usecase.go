@@ -18,5 +18,5 @@ func NewUserGetterUsecase(userGetter driven.UserGetter) *UserGetterUsecase {
 }
 
 func (ug UserGetterUsecase) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
-	return nil, nil
+	return ug.userGetter.GetByID(ctx, id)
 }
