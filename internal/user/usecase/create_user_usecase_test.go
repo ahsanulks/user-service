@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/SawitProRecruitment/UserService/adapter/driven"
 	"github.com/SawitProRecruitment/UserService/test/fake"
 	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
@@ -14,6 +15,7 @@ import (
 
 func TestUserUsecase_CreateUser(t *testing.T) {
 	fakeUserDriven := fake.NewFakeUserDriven()
+	bcrypt := new(driven.BcyrpEncryption)
 	type args struct {
 		ctx   context.Context
 		param *CreateUserParam
@@ -151,25 +153,47 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 				FullName:    faker.Name(),
 				Password:    generateRandomPassword(12),
 			}},
-			wantErr:    false,
-			wantErrMsg: "",
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := NewUserUsecase(fakeUserDriven)
-			gotId, err := uu.CreateUser(tt.args.ctx, tt.args.param)
+			uu := NewUserUsecase(fakeUserDriven, bcrypt)
+			gotID, err := uu.CreateUser(tt.args.ctx, tt.args.param)
 			assert := assert.New(t)
 			if tt.wantErr {
 				assert.Error(err)
 				assert.EqualError(err, tt.wantErrMsg)
 			} else {
-				gotUser, err := fakeUserDriven.GetByID(tt.args.ctx, gotId)
+				gotUser, err := fakeUserDriven.GetByID(tt.args.ctx, gotID)
 				assert.NoError(err)
-				assert.Equal(gotUser.ID, gotId)
+				assert.Equal(gotUser.ID, gotID)
 			}
 		})
 	}
+}
+
+func TestCreateUser_withPasswordEncrypted(t *testing.T) {
+	fakeUserDriven := fake.NewFakeUserDriven()
+	bcrypt := new(driven.BcyrpEncryption)
+	uu := NewUserUsecase(fakeUserDriven, bcrypt)
+	assert := assert.New(t)
+
+	userParam := &CreateUserParam{
+		PhoneNumber: "+628123123123",
+		FullName:    faker.Name(),
+		Password:    generateRandomPassword(12),
+	}
+	gotID, err := uu.CreateUser(context.Background(), userParam)
+	assert.NoError(err)
+
+	user, err := fakeUserDriven.GetByID(context.Background(), gotID)
+	assert.NoError(err)
+	assert.Equal(user.ID, gotID)
+	assert.NotEqual(userParam.Password, user.Password)
+
+	err = bcrypt.CompareEncryptedAndData([]byte(user.Password), []byte(userParam.Password))
+	assert.NoError(err)
 }
 
 func generateRandomString(length int, charset string) string {
