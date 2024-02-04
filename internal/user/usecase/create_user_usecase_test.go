@@ -71,6 +71,30 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "phoneNumber: must start with '+62' and only containt number",
 		},
+		{
+			name: "when fullName less than 3 character, it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "+628123123123",
+				FullName:    faker.Name(options.WithRandomStringLength(2)),
+				Password:    faker.Password(options.WithRandomStringLength(10)),
+			}},
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "fullName: must be between 3 and 60 characters in length",
+		},
+		{
+			name: "when fullName more than 60 character, it should return error",
+			uu:   NewUserUsecase(),
+			args: args{context.Background(), &CreateUserParam{
+				PhoneNumber: "+628123123123",
+				FullName:    faker.Name(options.WithRandomStringLength(61)),
+				Password:    faker.Password(options.WithRandomStringLength(10)),
+			}},
+			wantId:     "",
+			wantErr:    true,
+			wantErrMsg: "fullName: must be between 3 and 60 characters in length",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
