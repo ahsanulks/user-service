@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driver"
 	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
 	"github.com/google/uuid"
@@ -24,8 +25,15 @@ func NewFakeUserUsecase() *FakeUserUsecase {
 // CreateUser implements driver.UserUsecase.
 func (fu *FakeUserUsecase) CreateUser(ctx context.Context, params *usecase.CreateUserParam) (id string, err error) {
 	if len(params.PhoneNumber) == 0 {
-		return "", errors.New("error")
+		customErr := customerror.NewValidationError()
+		customErr.AddError("phone number", "phone empty")
+		return "", customErr
 	}
+
+	if params.PhoneNumber == "11111111" {
+		return "", errors.New("unexpected")
+	}
+
 	id = uuid.New().String()
 	fu.data[params.PhoneNumber] = id
 	return

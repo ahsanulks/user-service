@@ -41,3 +41,61 @@ func TestServer_CreateUser_CannotBindBody(t *testing.T) {
 	assert.Equal(http.StatusBadRequest, rec.Code)
 	assert.Equal("RequestBodyError", response.Type)
 }
+
+func TestServer_CreateUser_ErrValidation(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/api/users",
+		strings.NewReader(`{"FullName": "John Doe", "Password": "password123"}`),
+	)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	assert := assert.New(t)
+
+	fu := fake.NewFakeUserUsecase()
+	server := &Server{
+		uu: fu,
+	}
+
+	err := server.CreateUser(ctx)
+	assert.NoError(err)
+
+	var response generated.ErrorResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &response)
+	assert.NoError(err)
+
+	assert.Equal(http.StatusBadRequest, rec.Code)
+	assert.Equal("ValidationError", response.Type)
+}
+
+func TestServer_CreateUser_UnexpectedError(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/api/users",
+		strings.NewReader(`{"PhoneNumber": "11111111","FullName": "John Doe", "Password": "password123"}`),
+	)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	assert := assert.New(t)
+
+	fu := fake.NewFakeUserUsecase()
+	server := &Server{
+		uu: fu,
+	}
+
+	err := server.CreateUser(ctx)
+	assert.NoError(err)
+
+	var response generated.ErrorResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &response)
+	assert.NoError(err)
+
+	assert.Equal(http.StatusInternalServerError, rec.Code)
+	assert.Equal("InternalServerError", response.Type)
+}
