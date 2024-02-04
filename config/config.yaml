@@ -1,0 +1,7 @@
+# will get value from env
+postgres:
+  hostname: 
+  port: 
+  user: 
+  password: 
+  db:
