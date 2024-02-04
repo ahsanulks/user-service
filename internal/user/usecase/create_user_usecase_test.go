@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/go-faker/faker/v4/pkg/options"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUserUsecase_CreateUser(t *testing.T) {
@@ -78,4 +79,16 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCreateUser_shouldReturnErrorAllConstraintValidation(t *testing.T) {
+	userUsecase := NewUserUsecase()
+	_, err := userUsecase.CreateUser(context.Background(), &CreateUserParam{
+		PhoneNumber: "123131",
+		FullName:    faker.Name(options.WithRandomStringLength(10)),
+		Password:    faker.Password(options.WithRandomStringLength(10)),
+	})
+	assert := assert.New(t)
+	assert.Error(err)
+	assert.EqualError(err, "phoneNumber: must be between 10 and 13 characters in length;must start with '+62' and only containt number")
 }
