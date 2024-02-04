@@ -25,10 +25,25 @@ generated: api.yml
 	mkdir generated || true
 	oapi-codegen --package generated -generate types,server,spec $< > generated/api.gen.go
 
-INTERFACES_GO_FILES := $(shell find repository -name "interfaces.go")
-INTERFACES_GEN_GO_FILES := $(INTERFACES_GO_FILES:%.go=%.mock.gen.go)
+# INTERFACES_GO_FILES := $(shell find repository -name "interfaces.go")
+# INTERFACES_GEN_GO_FILES := $(INTERFACES_GO_FILES:%.go=%.mock.gen.go)
 
-generate_mocks: $(INTERFACES_GEN_GO_FILES)
-$(INTERFACES_GEN_GO_FILES): %.mock.gen.go: %.go
-	@echo "Generating mocks $@ for $<"
-	mockgen -source=$< -destination=$@ -package=$(shell basename $(dir $<))
+# generate_mocks: $(INTERFACES_GEN_GO_FILES)
+# $(INTERFACES_GEN_GO_FILES): %.mock.gen.go: %.go
+# 	@echo "Generating mocks $@ for $<"
+# 	mockgen -source=$< -destination=$@ -package=$(shell basename $(dir $<))
+
+MIGRATION_DIR := db/migrations
+
+migration_create:
+	migrate create -ext sql -dir $(MIGRATION_DIR) -seq $(filter-out $@,$(MAKECMDGOALS))
+
+migration_up:
+	migrate -database "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable" -path $(MIGRATION_DIR) up
+
+migration_down:
+	migrate -database "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable" -path $(MIGRATION_DIR) down 1
+
+# Prevent Makefile from treating arguments as targets
+%:
+	@:
