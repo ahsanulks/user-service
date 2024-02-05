@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"time"
+	"unicode"
 
 	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
 )
@@ -122,9 +123,8 @@ func (user User) validatePassword() error {
 	}
 
 	// Check for at least 1 capital letter, 1 number, and 1 special character
-	passwordRegex := regexp.MustCompile(`^(.*[A-Z])(.*\d)(.*[^A-Za-z0-9])`)
-	match := passwordRegex.MatchString(user.Password)
-	if !match {
+
+	if !strongPassword(user.Password) {
 		validationError.AddError("password", "containing at least 1 capital characters AND 1 number AND 1 special (nonalpha-numeric) characters")
 	}
 
@@ -133,4 +133,25 @@ func (user User) validatePassword() error {
 	}
 
 	return nil
+}
+
+func strongPassword(password string) bool {
+	hasCapital := false
+	hasLowercase := false
+	hasNumber := false
+	hasSpecialChar := false
+
+	for _, char := range password {
+		if unicode.IsUpper(char) {
+			hasCapital = true
+		} else if unicode.IsLower(char) {
+			hasLowercase = true
+		} else if unicode.IsDigit(char) {
+			hasNumber = true
+		} else if char >= 33 && char <= 47 || char >= 58 && char <= 64 || char >= 91 && char <= 96 || char >= 123 && char <= 126 {
+			hasSpecialChar = true
+		}
+	}
+
+	return hasCapital && hasLowercase && hasNumber && hasSpecialChar
 }
