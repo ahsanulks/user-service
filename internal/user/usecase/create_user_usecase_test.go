@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/SawitProRecruitment/UserService/adapter/driven"
 	"github.com/SawitProRecruitment/UserService/internal/user/entity"
 	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
 	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
 	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
+	"github.com/SawitProRecruitment/UserService/repository"
 	"github.com/SawitProRecruitment/UserService/test/fake"
 	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +23,7 @@ import (
 
 func TestUserUsecase_CreateUser(t *testing.T) {
 	fakeUserDriven := fake.NewFakeUserDriven()
-	bcrypt := new(driven.BcyrpEncryption)
+	bcrypt := new(repository.BcyrpEncryption)
 	type args struct {
 		ctx   context.Context
 		param *request.CreateUser
@@ -200,7 +200,7 @@ func assertMessagesEqual(message1, message2 string) bool {
 
 func TestCreateUser_withPasswordEncrypted(t *testing.T) {
 	fakeUserDriven := fake.NewFakeUserDriven()
-	bcrypt := new(driven.BcyrpEncryption)
+	bcrypt := new(repository.BcyrpEncryption)
 	uu := usecase.NewUserUsecase(fakeUserDriven, bcrypt, nil, nil)
 	assert := assert.New(t)
 
@@ -445,7 +445,7 @@ func TestUserUsecase_GenerateUserToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := usecase.NewUserUsecase(fakeUserDriven, new(driven.BcyrpEncryption), fakeUserDriven, new(fake.FakeTokenProvider))
+			uu := usecase.NewUserUsecase(fakeUserDriven, new(repository.BcyrpEncryption), fakeUserDriven, new(fake.FakeTokenProvider))
 			result, err := uu.GenerateUserToken(tt.args.ctx, tt.args.params)
 			assert := assert.New(t)
 			assert.Equal(tt.wantErr, err != nil)

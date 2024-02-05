@@ -1,5 +1,5 @@
 // This file contains the repository implementation layer.
-package driven
+package repository
 
 import (
 	"database/sql"
