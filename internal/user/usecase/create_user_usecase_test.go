@@ -217,7 +217,6 @@ func TestCreateUser_withPasswordEncrypted(t *testing.T) {
 	assert.Equal(user.ID, gotID)
 	assert.NotEqual(userParam.Password, user.Password)
 
-	fmt.Println(userParam.Password, user.Password)
 	err = bcrypt.CompareEncryptedAndData([]byte(user.Password), []byte(userParam.Password))
 	assert.NoError(err)
 }
