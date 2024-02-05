@@ -15,9 +15,10 @@ FROM alpine:latest
 
 # We need to copy the binary from the build image to the production image.
 COPY --from=Build /main .
+COPY --from=Build /go/config /go/config
 
 # This is the port that our application will be listening on.
-EXPOSE 1323
+EXPOSE 8080
 
 # This is the command that will be executed when the container is started.
 ENTRYPOINT ["./main"]
