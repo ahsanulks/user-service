@@ -1,6 +1,6 @@
 
 
-.PHONY: clean all init generate generate_mocks
+.PHONY: clean all init generate generate_mocks test
 
 all: build/main
 

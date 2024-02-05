@@ -1,4 +1,4 @@
-package driven
+package repository
 
 import (
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
