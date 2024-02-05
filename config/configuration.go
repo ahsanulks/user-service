@@ -12,6 +12,7 @@ import (
 
 type ApplicationConfig struct {
 	Postgres DBConfig `mapstructure:"postgres"`
+	JWT      JWT      `mapstructure:"jwt"`
 }
 
 type DBConfig struct {
@@ -20,6 +21,12 @@ type DBConfig struct {
 	Password string `mapstructure:"password"`
 	Port     int    `mapstructure:"port"`
 	DB       string `mapstructure:"db"`
+}
+
+type JWT struct {
+	PrivateKey    string `mapstructure:"private_key"`
+	PublicKey     string `mapstructure:"public_key"`
+	ExpiresSecond int    `mapstructure:"expires_second"`
 }
 
 var (

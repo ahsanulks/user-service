@@ -10,3 +10,8 @@ type UpdateProfile struct {
 	PhoneNumber *string
 	FullName    *string
 }
+
+type GenerateUserTokenRequest struct {
+	PhoneNumber string
+	Password    string
+}

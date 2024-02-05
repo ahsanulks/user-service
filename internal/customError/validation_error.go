@@ -13,6 +13,14 @@ func NewValidationError() *ValidationError {
 	return &ValidationError{errors: make(map[string]string)}
 }
 
+func NewValidationErrorWithMessage(key, message string) *ValidationError {
+	return &ValidationError{
+		errors: map[string]string{
+			key: message,
+		},
+	}
+}
+
 func (ve *ValidationError) AddError(key, message string) {
 	if val, ok := ve.errors[key]; ok {
 		ve.errors[key] = val + "," + message

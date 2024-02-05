@@ -21,7 +21,12 @@ func NewServer(opt *ServerOptions) *Server {
 	userDB := driven.NewUserDB(db)
 
 	return &Server{
-		userUsecase: usecase.NewUserUsecase(userDB, new(driven.BcyrpEncryption)),
-		userGetter:  usecase.NewUserGetterUsecase(userDB),
+		userUsecase: usecase.NewUserUsecase(
+			userDB,
+			new(driven.BcyrpEncryption),
+			userDB,
+			driven.NewUserTokenProvider(&opt.Conf.JWT),
+		),
+		userGetter: usecase.NewUserGetterUsecase(userDB),
 	}
 }

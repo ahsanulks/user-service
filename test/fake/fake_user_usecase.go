@@ -9,7 +9,9 @@ import (
 	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
 	"github.com/SawitProRecruitment/UserService/internal/user/entity"
 	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
+	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driver"
+	"github.com/go-faker/faker/v4"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
@@ -87,4 +89,18 @@ func (fu *FakeUserUsecase) UpdateProfileByID(ctx context.Context, id string, par
 		return data, nil
 	}
 	return nil, errors.New("not Found")
+}
+
+// GenerateUserToken implements driver.UserUsecase.
+func (*FakeUserUsecase) GenerateUserToken(ctx context.Context, params *request.GenerateUserTokenRequest) (*response.Token, error) {
+	if params.PhoneNumber == "0000000" {
+		return nil, customerror.NewValidationErrorWithMessage("authentication", "error")
+	} else if params.PhoneNumber == "11111111" {
+		return nil, errors.New("error")
+	}
+	return &response.Token{
+		Token:     faker.Jwt(),
+		ExpiresIn: 3600,
+		Type:      "Bearer",
+	}, nil
 }
