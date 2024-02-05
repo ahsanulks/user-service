@@ -63,3 +63,11 @@ func (fud *FakeUserDriven) GetByPhoneNumber(ctx context.Context, phoneNumber str
 	}
 	return nil, errors.New("resource not found")
 }
+
+// UpdateUserToken implements driven.UserWriter.
+func (*FakeUserDriven) UpdateUserToken(ctx context.Context, userId string) error {
+	if val := ctx.Value("token_error"); val != nil {
+		return errors.New("error")
+	}
+	return nil
+}

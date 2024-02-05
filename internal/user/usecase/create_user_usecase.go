@@ -50,5 +50,13 @@ func (uu UserUsecase) GenerateUserToken(ctx context.Context, params *request.Gen
 		return nil, customerror.NewValidationErrorWithMessage("authentication", "wrong phone number/password")
 	}
 
-	return uu.tokenProvider.Generate(user)
+	token, err := uu.tokenProvider.Generate(user)
+	if err != nil {
+		return nil, err
+	}
+	err = uu.userWriter.UpdateUserToken(ctx, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
 }

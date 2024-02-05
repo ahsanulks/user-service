@@ -381,12 +381,24 @@ func TestUserUsecase_GenerateUserToken(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "when user password error, it should return error",
+			name: "when generate token error, it should return error",
 			args: args{
 				context.Background(),
 				&request.GenerateUserTokenRequest{
 					PhoneNumber: invalidUser.PhoneNumber,
 					Password:    invalidUser.Password,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "when error record last login count, it should return token",
+			args: args{
+				context.WithValue(context.Background(), "token_error", true),
+				&request.GenerateUserTokenRequest{
+					PhoneNumber: user.PhoneNumber,
+					Password:    validPassword,
 				},
 			},
 			want:    nil,
