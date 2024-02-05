@@ -65,7 +65,7 @@ func (utp *UserTokenProvider) Generate(user *entity.User) (*response.Token, erro
 	}, nil
 }
 
-func (uc *UserTokenProvider) ValidateJWT(tokenString string) (*jwt.RegisteredClaims, error) {
+func (uc *UserTokenProvider) ValidateJWT(tokenString string) (map[string]interface{}, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -81,7 +81,7 @@ func (uc *UserTokenProvider) ValidateJWT(tokenString string) (*jwt.RegisteredCla
 		return nil, ErrorInvalidToken
 	}
 
-	claims, ok := token.Claims.(*jwt.RegisteredClaims)
+	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
 		return nil, ErrorInvalidToken
 	}
