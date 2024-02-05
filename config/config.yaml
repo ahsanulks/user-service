@@ -1,4 +1,8 @@
 # will get value from env
+jwt:
+  private_key:
+  public_key:
+  expires_second:
 postgres:
   hostname: 
   port: 

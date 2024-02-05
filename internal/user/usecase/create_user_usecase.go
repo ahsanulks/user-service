@@ -3,8 +3,10 @@ package usecase
 import (
 	"context"
 
+	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
 	"github.com/SawitProRecruitment/UserService/internal/user/entity"
 	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
+	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
 )
 
 const (
@@ -35,4 +37,26 @@ func (uu UserUsecase) UpdateProfileByID(ctx context.Context, id string, params *
 	}
 
 	return uu.userWriter.UpdateProfileByID(ctx, id, params)
+}
+
+func (uu UserUsecase) GenerateUserToken(ctx context.Context, params *request.GenerateUserTokenRequest) (*response.Token, error) {
+	user, err := uu.userGetter.GetByPhoneNumber(ctx, params.PhoneNumber)
+	if err != nil {
+		return nil, customerror.NewValidationErrorWithMessage("authentication", "wrong phone number/password")
+	}
+
+	err = uu.encryptor.CompareEncryptedAndData([]byte(user.Password), []byte(params.Password))
+	if err != nil {
+		return nil, customerror.NewValidationErrorWithMessage("authentication", "wrong phone number/password")
+	}
+
+	token, err := uu.tokenProvider.Generate(user)
+	if err != nil {
+		return nil, err
+	}
+	err = uu.userWriter.UpdateUserToken(ctx, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
 }

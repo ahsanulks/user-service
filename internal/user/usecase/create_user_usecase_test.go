@@ -10,6 +10,7 @@ import (
 	"github.com/SawitProRecruitment/UserService/adapter/driven"
 	"github.com/SawitProRecruitment/UserService/internal/user/entity"
 	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
+	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
 	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
 	"github.com/SawitProRecruitment/UserService/test/fake"
 	"github.com/go-faker/faker/v4"
@@ -161,7 +162,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := usecase.NewUserUsecase(fakeUserDriven, bcrypt)
+			uu := usecase.NewUserUsecase(fakeUserDriven, bcrypt, nil, nil)
 			gotID, err := uu.CreateUser(tt.args.ctx, tt.args.param)
 			assert := assert.New(t)
 			if tt.wantErr {
@@ -179,7 +180,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 func TestCreateUser_withPasswordEncrypted(t *testing.T) {
 	fakeUserDriven := fake.NewFakeUserDriven()
 	bcrypt := new(driven.BcyrpEncryption)
-	uu := usecase.NewUserUsecase(fakeUserDriven, bcrypt)
+	uu := usecase.NewUserUsecase(fakeUserDriven, bcrypt, nil, nil)
 	assert := assert.New(t)
 
 	userParam := &request.CreateUser{
@@ -313,7 +314,7 @@ func TestUserUsecase_UpdateProfileByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := usecase.NewUserUsecase(fakeUserDriven, nil)
+			uu := usecase.NewUserUsecase(fakeUserDriven, nil, nil, nil)
 			result, err := uu.UpdateProfileByID(tt.args.ctx, tt.args.id, tt.args.params)
 			assert := assert.New(t)
 			if tt.wantErr {
@@ -324,6 +325,109 @@ func TestUserUsecase_UpdateProfileByID(t *testing.T) {
 				assert.Equal(gotUser.FullName, result.FullName)
 				assert.Equal(gotUser.PhoneNumber, result.PhoneNumber)
 			}
+		})
+	}
+}
+
+func TestUserUsecase_GenerateUserToken(t *testing.T) {
+	fakeUserDriven := fake.NewFakeUserDriven()
+	validPassword := faker.Password()
+	user := &entity.User{
+		PhoneNumber: "+628123123123",
+		FullName:    faker.Name(),
+		Password:    validPassword,
+	}
+	fakeUserDriven.Create(context.Background(), user)
+
+	invalidUser := &entity.User{
+		PhoneNumber: "======111",
+		FullName:    faker.Name(),
+		Password:    faker.Password(),
+	}
+	fakeUserDriven.Create(context.Background(), invalidUser)
+
+	type args struct {
+		ctx    context.Context
+		params *request.GenerateUserTokenRequest
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *response.Token
+		wantErr bool
+	}{
+		{
+			name: "when user not found, it should return error",
+			args: args{
+				context.Background(),
+				&request.GenerateUserTokenRequest{
+					PhoneNumber: faker.Phonenumber(),
+					Password:    faker.Password(),
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "when user password error, it should return error",
+			args: args{
+				context.Background(),
+				&request.GenerateUserTokenRequest{
+					PhoneNumber: user.Password,
+					Password:    faker.Password(),
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "when generate token error, it should return error",
+			args: args{
+				context.Background(),
+				&request.GenerateUserTokenRequest{
+					PhoneNumber: invalidUser.PhoneNumber,
+					Password:    invalidUser.Password,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "when error record last login count, it should return token",
+			args: args{
+				context.WithValue(context.Background(), "token_error", true),
+				&request.GenerateUserTokenRequest{
+					PhoneNumber: user.PhoneNumber,
+					Password:    validPassword,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "success, it should return token",
+			args: args{
+				context.Background(),
+				&request.GenerateUserTokenRequest{
+					PhoneNumber: user.PhoneNumber,
+					Password:    validPassword,
+				},
+			},
+			want: &response.Token{
+				Token:     "1231313213213131",
+				ExpiresIn: 3600,
+				Type:      "Bearer",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			uu := usecase.NewUserUsecase(fakeUserDriven, new(driven.BcyrpEncryption), fakeUserDriven, new(fake.FakeTokenProvider))
+			result, err := uu.GenerateUserToken(tt.args.ctx, tt.args.params)
+			assert := assert.New(t)
+			assert.Equal(tt.wantErr, err != nil)
+			assert.Equal(tt.want, result)
 		})
 	}
 }

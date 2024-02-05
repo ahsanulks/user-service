@@ -74,3 +74,16 @@ func (udb *UserDB) UpdateProfileByID(ctx context.Context, id string, params *req
 
 	return &user, nil
 }
+
+func (udb *UserDB) UpdateUserToken(ctx context.Context, userId string) error {
+	_, err := udb.conn.Db.ExecContext(ctx, `
+		INSERT INTO
+			user_tokens (user_id, success_login_count, last_login_at)
+		VALUES
+    		($1, 1, NOW())
+		ON CONFLICT (user_id)
+		DO UPDATE SET
+    		success_login_count = user_tokens.success_login_count + 1,
+    		last_login_at = NOW()`, userId)
+	return err
+}

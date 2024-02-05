@@ -227,3 +227,63 @@ func TestUserDB_UpdateProfileByID(t *testing.T) {
 func ptrString(s string) *string {
 	return &s
 }
+
+func TestUserDB_UpdateUserToken(t *testing.T) {
+	type args struct {
+		ctx    context.Context
+		userId string
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantErr    bool
+		expectFunc func(sqlmock.Sqlmock, string)
+	}{
+		{
+			name: "when error on db, it should return error",
+			args: args{
+				context.Background(),
+				"12313",
+			},
+			wantErr: true,
+			expectFunc: func(mock sqlmock.Sqlmock, userId string) {
+				mock.ExpectExec("INSERT INTO user_tokens").
+					WithArgs(userId).
+					WillReturnError(errors.New("some database error"))
+			},
+		},
+		{
+			name: "when error on db, it should return error",
+			args: args{
+				context.Background(),
+				"12313",
+			},
+			wantErr: false,
+			expectFunc: func(mock sqlmock.Sqlmock, userId string) {
+				mock.ExpectExec("INSERT INTO user_tokens").
+					WithArgs(userId).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			conn, dbMock := newMockConn()
+			defer conn.Close()
+			pgConn := PostgreConnection{
+				Db: conn,
+			}
+			udb := &UserDB{
+				conn: &pgConn,
+			}
+
+			tt.expectFunc(dbMock, tt.args.userId)
+
+			err := udb.UpdateUserToken(tt.args.ctx, tt.args.userId)
+
+			assert := assert.New(t)
+			assert.Equal(tt.wantErr, err != nil)
+			assert.NoError(dbMock.ExpectationsWereMet())
+		})
+	}
+}
