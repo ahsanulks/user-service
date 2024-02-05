@@ -4,6 +4,7 @@ import (
 	"github.com/SawitProRecruitment/UserService/config"
 	"github.com/SawitProRecruitment/UserService/generated"
 	"github.com/SawitProRecruitment/UserService/handler"
+	"github.com/SawitProRecruitment/UserService/middleware"
 
 	"github.com/labstack/echo/v4"
 )
@@ -11,7 +12,8 @@ import (
 func main() {
 	e := echo.New()
 
-	var server generated.ServerInterface = newServer()
+	server := newServer()
+	e.Use(middleware.WithJwtAuth(server.TokenProvider))
 
 	generated.RegisterHandlers(e, server)
 	e.Logger.Fatal(e.Start(":8080"))

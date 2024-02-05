@@ -8,6 +8,8 @@ import (
 )
 
 type Server struct {
+	TokenProvider *driven.UserTokenProvider
+
 	userUsecase driver.UserUsecase
 	userGetter  driver.UserGetterUsecase
 }
@@ -19,14 +21,16 @@ type ServerOptions struct {
 func NewServer(opt *ServerOptions) *Server {
 	db := driven.NewPostgreConnection(&opt.Conf.Postgres)
 	userDB := driven.NewUserDB(db)
+	tokenProvider := driven.NewUserTokenProvider(&opt.Conf.JWT)
 
 	return &Server{
 		userUsecase: usecase.NewUserUsecase(
 			userDB,
 			new(driven.BcyrpEncryption),
 			userDB,
-			driven.NewUserTokenProvider(&opt.Conf.JWT),
+			tokenProvider,
 		),
-		userGetter: usecase.NewUserGetterUsecase(userDB),
+		userGetter:    usecase.NewUserGetterUsecase(userDB),
+		TokenProvider: tokenProvider,
 	}
 }

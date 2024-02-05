@@ -23,3 +23,7 @@ func (*FakeTokenProvider) Generate(user *entity.User) (*response.Token, error) {
 		Type:      "Bearer",
 	}, nil
 }
+
+func (*FakeTokenProvider) ValidateJWT(tokenString string) (map[string]interface{}, error) {
+	return nil, nil
+}
