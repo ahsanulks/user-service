@@ -8,7 +8,6 @@ import (
 	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -31,8 +30,6 @@ func NewFakeUserDriven() *FakeUserDriven {
 // Create implements driven.UserWriter.
 func (fud *FakeUserDriven) Create(ctx context.Context, user *entity.User) (id string, err error) {
 	user.ID = uuid.New().String()
-	encryptedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	user.Password = string(encryptedPassword)
 	fud.data[user.ID] = user
 	fud.dataByPhone[user.PhoneNumber] = user
 	return user.ID, nil
