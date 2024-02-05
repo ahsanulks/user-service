@@ -183,11 +183,10 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 
 func splitAndSortErrorMessage(message string) []string {
 	slicedMessages := strings.Split(message, ";")
-	// Remove leading/trailing whitespaces from each message
 	for i, msg := range slicedMessages {
 		slicedMessages[i] = strings.TrimSpace(msg)
 	}
-	// Sort the messages
+
 	sort.Strings(slicedMessages)
 	return slicedMessages
 }
@@ -196,7 +195,6 @@ func assertMessagesEqual(message1, message2 string) bool {
 	sorted1 := splitAndSortErrorMessage(message1)
 	sorted2 := splitAndSortErrorMessage(message2)
 
-	// Compare sorted slices
 	return fmt.Sprintf("%v", sorted1) == fmt.Sprintf("%v", sorted2)
 }
 
