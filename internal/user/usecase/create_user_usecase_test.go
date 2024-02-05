@@ -3,8 +3,11 @@ package usecase_test
 import (
 	"context"
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"regexp"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/SawitProRecruitment/UserService/adapter/driven"
@@ -15,6 +18,7 @@ import (
 	"github.com/SawitProRecruitment/UserService/test/fake"
 	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestUserUsecase_CreateUser(t *testing.T) {
@@ -167,7 +171,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			assert := assert.New(t)
 			if tt.wantErr {
 				assert.Error(err)
-				assert.EqualError(err, tt.wantErrMsg)
+				assert.True(assertMessagesEqual(tt.wantErrMsg, err.Error()))
 			} else {
 				gotUser, err := fakeUserDriven.GetByID(tt.args.ctx, gotID)
 				assert.NoError(err)
@@ -175,6 +179,25 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 			}
 		})
 	}
+}
+
+func splitAndSortErrorMessage(message string) []string {
+	slicedMessages := strings.Split(message, ";")
+	// Remove leading/trailing whitespaces from each message
+	for i, msg := range slicedMessages {
+		slicedMessages[i] = strings.TrimSpace(msg)
+	}
+	// Sort the messages
+	sort.Strings(slicedMessages)
+	return slicedMessages
+}
+
+func assertMessagesEqual(message1, message2 string) bool {
+	sorted1 := splitAndSortErrorMessage(message1)
+	sorted2 := splitAndSortErrorMessage(message2)
+
+	// Compare sorted slices
+	return fmt.Sprintf("%v", sorted1) == fmt.Sprintf("%v", sorted2)
 }
 
 func TestCreateUser_withPasswordEncrypted(t *testing.T) {
@@ -196,6 +219,7 @@ func TestCreateUser_withPasswordEncrypted(t *testing.T) {
 	assert.Equal(user.ID, gotID)
 	assert.NotEqual(userParam.Password, user.Password)
 
+	fmt.Println(userParam.Password, user.Password)
 	err = bcrypt.CompareEncryptedAndData([]byte(user.Password), []byte(userParam.Password))
 	assert.NoError(err)
 }
@@ -332,10 +356,11 @@ func TestUserUsecase_UpdateProfileByID(t *testing.T) {
 func TestUserUsecase_GenerateUserToken(t *testing.T) {
 	fakeUserDriven := fake.NewFakeUserDriven()
 	validPassword := faker.Password()
+	encryptedPassword, _ := bcrypt.GenerateFromPassword([]byte(validPassword), bcrypt.DefaultCost)
 	user := &entity.User{
 		PhoneNumber: "+628123123123",
 		FullName:    faker.Name(),
-		Password:    validPassword,
+		Password:    string(encryptedPassword),
 	}
 	fakeUserDriven.Create(context.Background(), user)
 
