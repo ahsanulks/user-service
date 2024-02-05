@@ -77,8 +77,8 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
     patch:
-      summary: update current user profile data
-      operationId: updateCurrentUserData
+      summary: update current user profile
+      operationId: updateCurrentUserProfile
       tags:
         - user
       security:
@@ -95,7 +95,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetUserResponse"
+                $ref: "#/components/schemas/UpdateUserResponse"
         "400":
           $ref: "#/components/responses/InvalidInput"
         "403":
@@ -209,6 +209,16 @@ components:
           minLength: 3
           maxLength: 60
           example: "John Doe"
+    UpdateUserResponse:
+      type: object
+      required:
+        - phoneNumber
+        - fullName
+      properties:
+        phoneNumber:
+          type: string
+        fullName:
+          type: string
     ErrorResponse:
       type: object
       required:

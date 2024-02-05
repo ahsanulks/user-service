@@ -5,28 +5,26 @@ import (
 
 	"github.com/SawitProRecruitment/UserService/generated"
 	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-// CreateUser implements generated.ServerInterface.
-func (s *Server) CreateUser(ctx echo.Context) error {
-	var params generated.CreateUserRequest
+func (s *Server) UpdateCurrentUserProfile(ctx echo.Context) error {
+	var params generated.UpdateUserRequest
 	if err := ctx.Bind(&params); err != nil {
 		return parseError(ctx, err)
 	}
-	id, err := s.userUsecase.CreateUser(ctx.Request().Context(), &request.CreateUser{
+	userID := ctx.Request().Context().Value("userID").(string)
+	user, err := s.userUsecase.UpdateProfileByID(ctx.Request().Context(), userID, &request.UpdateProfile{
 		PhoneNumber: params.PhoneNumber,
 		FullName:    params.FullName,
-		Password:    params.Password,
 	})
 
 	if err != nil {
 		return parseError(ctx, err)
 	}
 
-	uuid, _ := uuid.Parse(id)
-	return ctx.JSON(http.StatusCreated, generated.CreateUserResponse{
-		Id: uuid,
+	return ctx.JSON(http.StatusOK, generated.UpdateUserResponse{
+		FullName:    user.FullName,
+		PhoneNumber: user.PhoneNumber,
 	})
 }

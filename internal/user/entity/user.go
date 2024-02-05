@@ -53,6 +53,35 @@ func NewUser(fullName, phoneNumber, password string) (*User, error) {
 	return user, nil
 }
 
+func (user *User) UpdateProfile(fullName, phoneNumber *string) error {
+	validationError := customerror.NewValidationError()
+	if fullName == nil && phoneNumber == nil {
+		validationError.AddError("fullName", "at least 1 field must be present")
+		validationError.AddError("phoneNumber", "at least 1 field must be present")
+		return validationError
+	}
+
+	if fullName != nil {
+		user.FullName = *fullName
+		if err := user.validateFullName(); err != nil {
+			validationError.Merge(err)
+		}
+	}
+
+	if phoneNumber != nil {
+		user.PhoneNumber = *phoneNumber
+		if err := user.validatePhoneNumber(); err != nil {
+			validationError.Merge(err)
+		}
+	}
+
+	if validationError.HasError() {
+		return validationError
+	}
+
+	return nil
+}
+
 func (user User) validatePhoneNumber() error {
 	validationError := customerror.NewValidationError()
 	if len(user.PhoneNumber) < phoneNumberMinLen || len(user.PhoneNumber) > phoneNumberMaxLen {
