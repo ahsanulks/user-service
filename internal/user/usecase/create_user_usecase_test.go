@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/SawitProRecruitment/UserService/adapter/driven"
+	"github.com/SawitProRecruitment/UserService/internal/user/entity"
+	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
 	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
 	"github.com/SawitProRecruitment/UserService/test/fake"
 	"github.com/go-faker/faker/v4"
@@ -19,7 +21,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 	bcrypt := new(driven.BcyrpEncryption)
 	type args struct {
 		ctx   context.Context
-		param *usecase.CreateUserParam
+		param *request.CreateUser
 	}
 	tests := []struct {
 		name       string
@@ -29,7 +31,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 	}{
 		{
 			name: "when phoneNumber less than 10 character it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+62123",
 				FullName:    faker.Name(),
 				Password:    generateRandomPassword(12),
@@ -39,7 +41,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when phoneNumber more than 13 character it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+62123123123123",
 				FullName:    faker.Name(),
 				Password:    generateRandomPassword(12),
@@ -49,7 +51,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when phoneNumber not have prefix +62 it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "0812311231231",
 				FullName:    faker.Name(),
 				Password:    generateRandomPassword(12),
@@ -59,7 +61,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when phoneNumber have prefix +62 but containt other than number, it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+62abc3123123",
 				FullName:    faker.Name(),
 				Password:    generateRandomPassword(12),
@@ -69,7 +71,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when fullName less than 3 character, it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+628123123123",
 				FullName:    generateRandomString(2, ""),
 				Password:    generateRandomPassword(12),
@@ -79,7 +81,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when fullName more than 60 character, it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+628123123123",
 				FullName:    generateRandomString(61, ""),
 				Password:    generateRandomPassword(12),
@@ -89,7 +91,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when password less than 6 character, it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+628123123123",
 				FullName:    faker.Name(),
 				Password:    "aA2.",
@@ -99,7 +101,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when password more than 64 character, it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+628123123123",
 				FullName:    faker.Name(),
 				Password:    generateRandomPassword(65),
@@ -109,7 +111,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when password not containt number, it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+628123123123",
 				FullName:    faker.Name(),
 				Password:    "abcAdasd.D",
@@ -119,7 +121,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when password not containt capital char, it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+628123123123",
 				FullName:    faker.Name(),
 				Password:    "abc123.asd",
@@ -129,7 +131,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when password not containt special char, it should return error",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+628123123123",
 				FullName:    faker.Name(),
 				Password:    "Asd123ASd",
@@ -139,7 +141,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when all field not valid, it should return all error message",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "",
 				FullName:    "",
 				Password:    "",
@@ -149,7 +151,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		},
 		{
 			name: "when all field valid, it should return id and saved",
-			args: args{context.Background(), &usecase.CreateUserParam{
+			args: args{context.Background(), &request.CreateUser{
 				PhoneNumber: "+628123123123",
 				FullName:    faker.Name(),
 				Password:    generateRandomPassword(12),
@@ -180,7 +182,7 @@ func TestCreateUser_withPasswordEncrypted(t *testing.T) {
 	uu := usecase.NewUserUsecase(fakeUserDriven, bcrypt)
 	assert := assert.New(t)
 
-	userParam := &usecase.CreateUserParam{
+	userParam := &request.CreateUser{
 		PhoneNumber: "+628123123123",
 		FullName:    faker.Name(),
 		Password:    generateRandomPassword(12),
@@ -223,4 +225,105 @@ func generateRandomPassword(length int) string {
 	}
 
 	return password
+}
+
+func TestUserUsecase_UpdateProfileByID(t *testing.T) {
+	fakeUserDriven := fake.NewFakeUserDriven()
+	user := &entity.User{
+		PhoneNumber: "+628123123123",
+		FullName:    faker.Name(),
+	}
+	id, _ := fakeUserDriven.Create(context.Background(), user)
+	user.ID = id
+
+	invalidName := "as"
+	invalidPhone := "09123131"
+
+	type args struct {
+		ctx    context.Context
+		id     string
+		params *request.UpdateProfile
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *entity.User
+		wantErr bool
+	}{
+		{
+			name: "when all params empy it should return error",
+			args: args{
+				context.Background(),
+				faker.UUIDHyphenated(),
+				&request.UpdateProfile{},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "when fullName not match with criteria it should return error",
+			args: args{
+				context.Background(),
+				faker.UUIDHyphenated(),
+				&request.UpdateProfile{
+					FullName: &invalidName,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "when phoneNumber not match with criteria it should return error",
+			args: args{
+				context.Background(),
+				faker.UUIDHyphenated(),
+				&request.UpdateProfile{
+					PhoneNumber: &invalidPhone,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "when got error from writer it should return error",
+			args: args{
+				context.Background(),
+				"1231313121",
+				&request.UpdateProfile{
+					FullName:    &user.FullName,
+					PhoneNumber: &user.PhoneNumber,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "when success it should return user",
+			args: args{
+				context.Background(),
+				user.ID,
+				&request.UpdateProfile{
+					FullName:    &user.FullName,
+					PhoneNumber: &user.PhoneNumber,
+				},
+			},
+			want:    user,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			uu := usecase.NewUserUsecase(fakeUserDriven, nil)
+			result, err := uu.UpdateProfileByID(tt.args.ctx, tt.args.id, tt.args.params)
+			assert := assert.New(t)
+			if tt.wantErr {
+				assert.Error(err)
+			} else {
+				gotUser, err := fakeUserDriven.GetByID(tt.args.ctx, result.ID)
+				assert.NoError(err)
+				assert.Equal(gotUser.FullName, result.FullName)
+				assert.Equal(gotUser.PhoneNumber, result.PhoneNumber)
+			}
+		})
+	}
 }

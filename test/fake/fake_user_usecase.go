@@ -8,9 +8,10 @@ import (
 
 	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
 	"github.com/SawitProRecruitment/UserService/internal/user/entity"
+	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driver"
-	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 var (
@@ -31,7 +32,7 @@ func NewFakeUserUsecase() *FakeUserUsecase {
 }
 
 // CreateUser implements driver.UserUsecase.
-func (fu *FakeUserUsecase) CreateUser(ctx context.Context, params *usecase.CreateUserParam) (id string, err error) {
+func (fu *FakeUserUsecase) CreateUser(ctx context.Context, params *request.CreateUser) (id string, err error) {
 	if len(params.PhoneNumber) == 0 {
 		customErr := customerror.NewValidationError()
 		customErr.AddError("phone number", "phone empty")
@@ -66,6 +67,21 @@ func (fu FakeUserUsecase) GetIDByPhone(phone string) (id string, err error) {
 func (fu *FakeUserUsecase) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
 	if id == "1232131" {
 		return nil, sql.ErrNoRows
+	}
+	if data, ok := fu.dataById[id]; ok {
+		return data, nil
+	}
+	return nil, errors.New("not Found")
+}
+
+// UpdateProfileByID implements driver.UserUsecase.
+func (fu *FakeUserUsecase) UpdateProfileByID(ctx context.Context, id string, params *request.UpdateProfile) (*entity.User, error) {
+	if id == "1232131" {
+		return nil, errors.New("error")
+	} else if id == "3333" {
+		return nil, &pq.Error{
+			Code: "23505",
+		}
 	}
 	if data, ok := fu.dataById[id]; ok {
 		return data, nil

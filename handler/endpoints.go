@@ -11,7 +11,3 @@ var _ generated.ServerInterface = new(Server)
 func (*Server) GenerateUserToken(ctx echo.Context) error {
 	panic("unimplemented")
 }
-
-func (*Server) UpdateCurrentUserData(ctx echo.Context) error {
-	panic("unimplemented")
-}

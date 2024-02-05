@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/SawitProRecruitment/UserService/generated"
-	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
+	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
 	"github.com/SawitProRecruitment/UserService/test/fake"
 	"github.com/go-faker/faker/v4"
 	"github.com/labstack/echo/v4"
@@ -17,7 +17,7 @@ import (
 
 func TestGetCurrentUser_Success(t *testing.T) {
 	fu := fake.NewFakeUserUsecase()
-	params := &usecase.CreateUserParam{}
+	params := &request.CreateUser{}
 	faker.FakeData(params)
 	id, _ := fu.CreateUser(context.Background(), params)
 

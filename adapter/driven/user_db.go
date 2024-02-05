@@ -2,9 +2,13 @@ package driven
 
 import (
 	"context"
+	"strconv"
+	"strings"
 
 	"github.com/SawitProRecruitment/UserService/internal/user/entity"
+	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
+	"github.com/google/uuid"
 )
 
 var (
@@ -33,4 +37,40 @@ func (udb *UserDB) Create(ctx context.Context, user *entity.User) (id string, er
 			id
 	`, user.FullName, user.PhoneNumber, user.Password).Scan(&id)
 	return
+}
+
+func (udb *UserDB) UpdateProfileByID(ctx context.Context, id string, params *request.UpdateProfile) (*entity.User, error) {
+	query := "UPDATE users SET updated_at = now(), "
+	var values []any
+	var index int
+
+	if params.FullName != nil {
+		query += "full_name = $" + strconv.Itoa(index+1) + ", "
+		values = append(values, *params.FullName)
+		index++
+	}
+
+	if params.PhoneNumber != nil {
+		query += "phone_number = $" + strconv.Itoa(index+1) + ", "
+		values = append(values, *params.PhoneNumber)
+		index++
+	}
+
+	query = strings.TrimSuffix(query, ", ")
+
+	query += " WHERE id = $" + strconv.Itoa(index+1) + "  RETURNING id, full_name, phone_number"
+	uuidUser, _ := uuid.Parse(id)
+	values = append(values, uuidUser)
+
+	var user entity.User
+	err := udb.conn.Db.QueryRowContext(ctx, query, values...).Scan(
+		&user.ID,
+		&user.FullName,
+		&user.PhoneNumber,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }

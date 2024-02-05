@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/SawitProRecruitment/UserService/internal/user/entity"
+	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
 	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
 	"github.com/google/uuid"
 )
@@ -34,6 +35,16 @@ func (fud *FakeUserDriven) Create(ctx context.Context, user *entity.User) (id st
 // Create implements driven.UserGetter.
 func (fud FakeUserDriven) GetByID(ctx context.Context, id string) (*entity.User, error) {
 	if user, ok := fud.data[id]; ok {
+		return user, nil
+	}
+	return nil, errors.New("resource not found")
+}
+
+// UpdateProfileByID implements driven.UserWriter.
+func (fud *FakeUserDriven) UpdateProfileByID(ctx context.Context, id string, params *request.UpdateProfile) (*entity.User, error) {
+	if user, ok := fud.data[id]; ok {
+		user.FullName = *params.FullName
+		user.PhoneNumber = *params.PhoneNumber
 		return user, nil
 	}
 	return nil, errors.New("resource not found")
