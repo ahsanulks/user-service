@@ -2,9 +2,11 @@ services:
   app:
     build: .
     ports:
-      - "8080:1323"
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/database?sslmode=disable
+      - "8080:8080"
+    env_file:
+      - .devcontainer/.env
+    extra_hosts:
+      - "localhost:host-gateway"
     depends_on:
       db:
         condition: service_healthy
@@ -12,14 +14,10 @@ services:
     platform: linux/x86_64
     image: postgres:14.1-alpine
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: sawitpro
+    env_file:
+      - .devcontainer/.env
     ports:
       - 5432:5432
-    expose:
-      - 5432
     volumes:
       - db:/var/lib/postgresql/data
       # Load database schema from ./database.sql
