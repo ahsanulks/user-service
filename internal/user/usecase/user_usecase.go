@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/port/driven"
 )
 
 type UserUsecase struct {

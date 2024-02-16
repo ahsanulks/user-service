@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"github.com/SawitProRecruitment/UserService/config"
-	"github.com/SawitProRecruitment/UserService/internal/user/port/driver"
-	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
-	"github.com/SawitProRecruitment/UserService/repository"
+	"userservice/config"
+	"userservice/internal/user/port/driver"
+	"userservice/internal/user/usecase"
+	"userservice/repository"
 )
 
 type Server struct {

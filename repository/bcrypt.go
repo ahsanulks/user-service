@@ -1,7 +1,8 @@
 package repository
 
 import (
-	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
+	"userservice/internal/user/port/driven"
+
 	"golang.org/x/crypto/bcrypt"
 )
 

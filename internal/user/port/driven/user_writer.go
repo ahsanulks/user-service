@@ -3,8 +3,8 @@ package driven
 import (
 	"context"
 
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/param/request"
 )
 
 type UserWriter interface {

@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/SawitProRecruitment/UserService/config"
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
-	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
+	"userservice/config"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/param/response"
+	"userservice/internal/user/port/driven"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )

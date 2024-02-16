@@ -7,9 +7,10 @@ import (
 	"log"
 	"testing"
 
+	"userservice/internal/user/entity"
+	"userservice/internal/user/param/request"
+
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
 	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )

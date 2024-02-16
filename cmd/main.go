@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/SawitProRecruitment/UserService/config"
-	"github.com/SawitProRecruitment/UserService/generated"
-	"github.com/SawitProRecruitment/UserService/handler"
-	custommiddleware "github.com/SawitProRecruitment/UserService/middleware"
+	"userservice/config"
+	"userservice/generated"
+	"userservice/handler"
+	custommiddleware "userservice/middleware"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

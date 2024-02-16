@@ -3,9 +3,9 @@ package fake
 import (
 	"errors"
 
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
-	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/param/response"
+	"userservice/internal/user/port/driven"
 )
 
 var _ driven.TokenProvider[*entity.User] = new(FakeTokenProvider)

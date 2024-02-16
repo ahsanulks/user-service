@@ -3,7 +3,7 @@ package driven
 import (
 	"context"
 
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
+	"userservice/internal/user/entity"
 )
 
 type UserGetter interface {

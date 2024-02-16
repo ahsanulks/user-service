@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
-	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/param/request"
+	"userservice/internal/user/port/driven"
+
 	"github.com/google/uuid"
 )
 

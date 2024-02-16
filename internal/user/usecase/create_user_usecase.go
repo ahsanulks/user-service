@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 
-	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
+	customerror "userservice/internal/customError"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/param/request"
+	"userservice/internal/user/param/response"
 )
 
 const (

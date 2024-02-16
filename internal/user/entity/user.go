@@ -6,7 +6,7 @@ import (
 	"time"
 	"unicode"
 
-	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
+	customerror "userservice/internal/customError"
 )
 
 const (
