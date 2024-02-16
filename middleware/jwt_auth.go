@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/port/driven"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/port/driven"
+
 	"github.com/labstack/echo/v4"
 )
 

@@ -6,11 +6,12 @@ import (
 	"errors"
 	"time"
 
-	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
-	"github.com/SawitProRecruitment/UserService/internal/user/port/driver"
+	customerror "userservice/internal/customError"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/param/request"
+	"userservice/internal/user/param/response"
+	"userservice/internal/user/port/driver"
+
 	"github.com/go-faker/faker/v4"
 	"github.com/google/uuid"
 	"github.com/lib/pq"

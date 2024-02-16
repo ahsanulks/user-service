@@ -3,9 +3,9 @@ package driver
 import (
 	"context"
 
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/param/request"
+	"userservice/internal/user/param/response"
 )
 
 type UserUsecase interface {

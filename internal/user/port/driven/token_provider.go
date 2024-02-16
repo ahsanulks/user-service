@@ -1,7 +1,7 @@
 package driven
 
 import (
-	"github.com/SawitProRecruitment/UserService/internal/user/param/response"
+	"userservice/internal/user/param/response"
 )
 
 type TokenProvider[T any] interface {

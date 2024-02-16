@@ -3,8 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/SawitProRecruitment/UserService/generated"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
+	"userservice/generated"
+	"userservice/internal/user/param/request"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )

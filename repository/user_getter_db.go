@@ -4,7 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
+	"userservice/internal/user/entity"
+
 	"github.com/google/uuid"
 )
 

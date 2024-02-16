@@ -7,8 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/SawitProRecruitment/UserService/generated"
-	"github.com/SawitProRecruitment/UserService/test/fake"
+	"userservice/generated"
+	"userservice/test/fake"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"

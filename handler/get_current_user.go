@@ -3,7 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/SawitProRecruitment/UserService/generated"
+	"userservice/generated"
+
 	"github.com/labstack/echo/v4"
 )
 

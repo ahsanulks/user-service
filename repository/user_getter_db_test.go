@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
+	"userservice/internal/user/entity"
+
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
 	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )

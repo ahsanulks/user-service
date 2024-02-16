@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/SawitProRecruitment/UserService/generated"
-	customerror "github.com/SawitProRecruitment/UserService/internal/customError"
+	"userservice/generated"
+	customerror "userservice/internal/customError"
+
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 )

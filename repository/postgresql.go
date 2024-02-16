@@ -5,7 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/SawitProRecruitment/UserService/config"
+	"userservice/config"
+
 	_ "github.com/lib/pq"
 )
 

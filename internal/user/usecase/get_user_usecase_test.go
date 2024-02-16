@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/SawitProRecruitment/UserService/internal/user/entity"
-	"github.com/SawitProRecruitment/UserService/internal/user/usecase"
-	"github.com/SawitProRecruitment/UserService/test/fake"
+	"userservice/internal/user/entity"
+	"userservice/internal/user/usecase"
+	"userservice/test/fake"
+
 	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )

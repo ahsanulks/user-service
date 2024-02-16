@@ -7,9 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/SawitProRecruitment/UserService/generated"
-	"github.com/SawitProRecruitment/UserService/internal/user/param/request"
-	"github.com/SawitProRecruitment/UserService/test/fake"
+	"userservice/generated"
+	"userservice/internal/user/param/request"
+	"userservice/test/fake"
+
 	"github.com/go-faker/faker/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
