@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
+	"userservice/infrastructure"
 	"userservice/internal/user/entity"
 	"userservice/internal/user/param/request"
 	"userservice/internal/user/param/response"
 	"userservice/internal/user/usecase"
-	"userservice/repository"
 	"userservice/test/fake"
 
 	"github.com/go-faker/faker/v4"
@@ -24,7 +24,7 @@ import (
 
 func TestUserUsecase_CreateUser(t *testing.T) {
 	fakeUserDriven := fake.NewFakeUserDriven()
-	bcrypt := new(repository.BcyrpEncryption)
+	bcrypt := new(infrastructure.BcyrpEncryption)
 	type args struct {
 		ctx   context.Context
 		param *request.CreateUser
@@ -201,7 +201,7 @@ func assertMessagesEqual(message1, message2 string) bool {
 
 func TestCreateUser_withPasswordEncrypted(t *testing.T) {
 	fakeUserDriven := fake.NewFakeUserDriven()
-	bcrypt := new(repository.BcyrpEncryption)
+	bcrypt := new(infrastructure.BcyrpEncryption)
 	uu := usecase.NewUserUsecase(fakeUserDriven, bcrypt, nil, nil)
 	assert := assert.New(t)
 
@@ -446,7 +446,7 @@ func TestUserUsecase_GenerateUserToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := usecase.NewUserUsecase(fakeUserDriven, new(repository.BcyrpEncryption), fakeUserDriven, new(fake.FakeTokenProvider))
+			uu := usecase.NewUserUsecase(fakeUserDriven, new(infrastructure.BcyrpEncryption), fakeUserDriven, new(fake.FakeTokenProvider))
 			result, err := uu.GenerateUserToken(tt.args.ctx, tt.args.params)
 			assert := assert.New(t)
 			assert.Equal(tt.wantErr, err != nil)

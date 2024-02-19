@@ -1,5 +1,5 @@
-// This file contains the repository implementation layer.
-package repository
+// This file contains the infrastructure implementation layer.
+package infrastructure
 
 import (
 	"database/sql"
