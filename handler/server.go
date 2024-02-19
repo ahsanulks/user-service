@@ -2,13 +2,13 @@ package handler
 
 import (
 	"userservice/config"
+	"userservice/infrastructure"
 	"userservice/internal/user/port/driver"
 	"userservice/internal/user/usecase"
-	"userservice/repository"
 )
 
 type Server struct {
-	TokenProvider *repository.UserTokenProvider
+	TokenProvider *infrastructure.UserTokenProvider
 
 	userUsecase driver.UserUsecase
 	userGetter  driver.UserGetterUsecase
@@ -19,14 +19,14 @@ type ServerOptions struct {
 }
 
 func NewServer(opt *ServerOptions) *Server {
-	db := repository.NewPostgreConnection(&opt.Conf.Postgres)
-	userDB := repository.NewUserDB(db)
-	tokenProvider := repository.NewUserTokenProvider(&opt.Conf.JWT)
+	db := infrastructure.NewPostgreConnection(&opt.Conf.Postgres)
+	userDB := infrastructure.NewUserDB(db)
+	tokenProvider := infrastructure.NewUserTokenProvider(&opt.Conf.JWT)
 
 	return &Server{
 		userUsecase: usecase.NewUserUsecase(
 			userDB,
-			new(repository.BcyrpEncryption),
+			new(infrastructure.BcyrpEncryption),
 			userDB,
 			tokenProvider,
 		),
