@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	customerror "userservice/internal/customError"
+	customerror "userservice/internal/custom_error"
 	"userservice/internal/user/entity"
 	"userservice/internal/user/param/request"
 	"userservice/internal/user/param/response"

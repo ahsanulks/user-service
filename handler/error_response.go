@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"userservice/generated"
-	customerror "userservice/internal/customError"
+	customerror "userservice/internal/custom_error"
 
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"

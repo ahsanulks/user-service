@@ -6,7 +6,7 @@ import (
 	"time"
 	"unicode"
 
-	customerror "userservice/internal/customError"
+	customerror "userservice/internal/custom_error"
 )
 
 const (
